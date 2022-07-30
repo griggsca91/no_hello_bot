@@ -1,16 +1,9 @@
-use std::{collections::HashMap, sync::Mutex, thread};
-use std::sync::Arc;
+use std::thread;
 use std::env;
-use std::thread::sleep;
-use std::time;
 
-use actix_web::{App, get, HttpResponse, HttpServer, post, Responder, web};
-use chrono::Duration;
-use lazy_static::lazy_static;
-use once_cell::sync::Lazy;
+use actix_web::{App, HttpResponse, HttpServer, post, Responder, web};
 use reqwest;
 use serde::{Deserialize, Serialize};
-use timer;
 
 #[derive(Clone)]
 struct Config {
@@ -40,9 +33,6 @@ struct UnknownWebhookEvent {
 
 #[derive(Deserialize)]
 struct Event {
-    #[serde(default)]
-    client_msg_id: String,
-    r#type: String,
     text: String,
     user: String,
 }
@@ -50,7 +40,6 @@ struct Event {
 #[derive(Deserialize)]
 struct EventCallback {
     event: Event,
-    event_context: String,
 }
 
 #[post("/webhook")]
