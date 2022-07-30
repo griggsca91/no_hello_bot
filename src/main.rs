@@ -44,16 +44,11 @@ struct EventCallback {
 
 #[post("/webhook")]
 async fn webhook(config: web::Data<Config>, req_body: String) -> impl Responder {
-    println!("{:?}", req_body);
-
-    let body: UnknownWebhookEvent = serde_json::from_str(req_body.as_str()).unwrap();
-
-    println!("{:?}", body.r#type);
-
+    // Need to respond to slack as soon as we can,
+    // so fire off a thread to handle the rest of the code
     match serde_json::from_str::<EventCallback>(req_body.as_str()) {
         Ok(e) => {
             thread::spawn(move || {
-                println!("thread running");
                 handle_event(config.bot_oauth_token.clone(), e);
             });
         }
